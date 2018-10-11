@@ -44,5 +44,5 @@ Therefore we can modify the function in following way:
 n → n/2 (n is even)
 n → (3n + 1)/n (n is odd)
 ```
-Here we reducing the next two steps into one when the loop comes to a odd value.
+Here we reduce the next two steps into one when the loop comes to a odd value.
 
