@@ -1,4 +1,4 @@
-This lab involves developing some divide and conquer algorithms, to solve the maximum segment sum problem.
+#This lab involves developing some divide and conquer algorithms, to solve the maximum segment sum problem.
 
 Suppose you are given a list of integers (so some might be negative). The maximum segment sum of the list is the contiguous sublist whose sum is the largest. (Note that there's an ambiguity if there are 0s in the list; these are not usually counted in the maximum segment, so we're actually looking for the shortest sequence with the largest sum.)
 
