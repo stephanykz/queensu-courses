@@ -10,12 +10,12 @@ As usual, we will divide the list in half recursively; and the base case will be
 
 1. Build an implementation of mss using this strategy. So that you can't just copy one of the many thousands of implementations from the Web, let's solve this specialised version: given a list of integers whose length is n, compute the maximum segment sum and the elements of the maximum segment between given positions left < right <= n.
 
- Test your code convincingly, i.e. with at least some examples where the maximum segment contains negative numbers and where the maximum segment is the entire sublist.
+   Test your code convincingly, i.e. with at least some examples where the maximum segment contains negative numbers and where the maximum segment is the entire sublist.
 
- What is the complexity of your solution?
+   What is the complexity of your solution?
 
 2. Suppose that you wanted to find the two maximal non-overlapping segments. One approach would be to find the maximal one, replace all the entries from the maximal segment with a suitably small value, and then run the algorithm again.
 
- Implement this idea, justifying your choice of replacement value. (Note that idea extends to the k maximal segments as long as they are non-overlapping.) What is the complexity?
+   Implement this idea, justifying your choice of replacement value. (Note that idea extends to the k maximal segments as long as they are non-overlapping.) What is the complexity?
 
 3. If you have time, think about how to find the two largest segments if they're allowed to be overlapping. (and build an implementation if you can). What is the complexity?
