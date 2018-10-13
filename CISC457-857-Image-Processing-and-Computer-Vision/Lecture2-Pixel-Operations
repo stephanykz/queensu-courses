@@ -1,0 +1,203 @@
+
+<html>
+<head>
+  <title>CISC 457, Lecture 3 - Pixel Operations</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../../class_style.css">
+  <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]} }); </script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+  </script>
+  <style>
+    img { max-width: 500px; margin: 2em; }
+    img + p { margin: -2em 0em 3em 2.5em; }
+  </style>
+</head> 
+
+<body>
+  <div style="float: right"></div>
+
+  <h1>Pixel Operations</h1>
+
+  <h1>Addition</h1>
+
+  <div>
+    <p>Can use averaging of multiple shots of an image to reduce variance due to noise
+
+    <p>Proof that variance is reduced by averaging $N$ samples:
+
+      <div>
+	<p>$\begin{array}{lll}
+	  \textrm{random variable}     & X \\
+	  \textrm{mean }               & E(X) & = \mu      & = \sum_i x_i \; P(X=x_i) \\
+	  \textrm{variance }           & V(X) & = \sigma^2 & = E( \; (X-\mu)^2 \; ) \\
+	  \textrm{standard deviation } & \sqrt{ \; V(X)}   & = \sigma \\
+	  \end{array}$
+
+	<p>
+	<p>$\begin{array}{rl}
+	  V( \textrm{average of N samples} )
+	  & = V( {1 \over N} \sum_i x_i ) \\
+	  & = E( ({1 \over N} \sum_i x_i - \mu)^2 ) \\
+	  & = E( ({1 \over N} \sum_i x_i - {1 \over N} \sum_i \mu)^ 2 ) \\
+	  & = E( ({1 \over N} (\sum_i( x_i - \mu )))^2 ) \\
+	  & = E( {1 \over N^2} (\sum_i( x_i - \mu ))^2 ) \\
+	  & = {1 \over N^2} \; E( \sum_i( x_i - \mu ) \times \sum_j( x_j - \mu ) ) \\
+	  & = {1 \over N^2} \; E( \sum_i \sum_j (x_i-\mu) \times (x_j-\mu) ) \\
+	  & = {1 \over N^2} \; \sum_i \sum_j E((x_i-\mu) \times (x_j-\mu)) \\
+	  \\
+	  & \textrm{when } i = j, \; E((x_i-\mu) \times (x_j-\mu)) = V(X)  \\
+	  & \textrm{when } i \neq j, \; E((x_i-\mu) \times (x_j-\mu)) = 0 \;\;\; \textrm{because the samples are independent (i.e. their covariance = 0)} \\
+	  \\
+	  & = {1 \over N^2} \; N \; V(X) \\
+	  & = {1 \over N} \; V(X) \\
+	  & = {1 \over N} \; \sigma^2 \\
+	  \\
+	  \textrm{stdev}( {1 \over N} \sum_i x_i ) & = \sqrt{{1 \over N} \; \sigma^2} \\
+      	                           & = {1 \over \sqrt{N}} \; \sigma \\
+
+	  \end{array}$
+
+      </div>
+
+      <p>So the standard deviation diminishes by $1 \over \sqrt{N}$ for $N$ samples
+	
+      <p>This is slow: halving the standard deviation requires ${1 \over \sqrt{N}} = {1 \over 2}$.  That is, $N = 4$ times the number of samples.
+
+      <p>Example:
+
+	<div>
+	  <img src=galaxy.png width="100%">
+	  <p><b>[Gonzales and Woods]</b>
+	</div>
+  </div>
+
+
+  <h1>Subtraction</h1>
+
+  <div>
+    <p>Can use subtraction for image masks (e.g. to remove constant background).
+      
+    <p>Subtraction is used in angiograms: after injection of
+    contrasting agent, subtract the original image, then do constrast
+    stretching to emphasize the contrasting agent.
+
+    <div>
+      <img src=angio.png>
+      <p><b>[Gonzales and Woods figure 2.28]</b>
+      <p>top-left: no contrasting agent, top-right: with contrasting agent
+      <p>bottom-left: difference; bottom-right: with constrast stetching
+    </div>
+  </div>
+  
+
+  <h1>Multiplication</h1>
+
+  <div>
+    <p>Multiplication can be used to correct patterns of uneven
+    illumination.
+
+    <p>Below the left image has an uneven pattern of illumination,
+    shown in the middle image.  The right image is equal to the left
+    image multiplied by the recipricol of the middle image.
+
+    <div>
+      <img src=sem.png>
+      <p><b>[Gonzales and Woods figure 2.29]</b>
+    </div>
+
+    <p>Below, the left image shows "vignetting", which is a reduction
+    in illumination with distance from the centre.  This is most
+    obvious at the corners.  The right image shows the "de-vignetted"
+    image, produced, as above, by multiplying by the recipricol of a
+    background image.
+
+    <div>
+      <img src=vignetting.png>
+      <p><b>[juzaphoto.com]</b>
+    </div>
+
+    <p>Optical vignetting occurs because light arriving
+    from <em>off</em> the optical axis is blocked by elements of the
+    lens and travels a longer path.
+
+    <p>Pixel vignetting occurs because off-axis light arrives at an
+      angle to the flat CCD array, causing it to be spread out more
+      than light arriving from on-axis.
+
+    <p>Cameras can store lens-specific vignetting masks and use them
+    to automatically de-vignette.  See below for example masks.
+
+    <div>
+      <img src=vignetting-mask.png>
+      <p><b>[lenstip.com]</b>
+    </div>
+  </div>
+
+  
+<h1>Boolean Operations</h1>
+
+  <div>
+    <p>Boolean operations can be performed on images:
+      <div>
+	<p>union( a, b ) = max(a,b)
+	<p>complement( a ) = <em>(max pixel value)</em> - a
+	<p>difference( a, b ) = |a - b|
+	<p>(What is the difference operation called for binary data?)
+      </div>
+
+    <p>Below, the left image is complemented to get the middle image.
+    The right image is the union of the left image and constant
+    mid-level image (not shown).
+
+    <div>
+      <img src=boolean-ops.png>
+      <p><b>[Gonzales and Woods figure 2.32]</b>
+    </div>
+
+
+  </div>
+
+  
+<h1>Linear and Power Transformations</h1>
+
+  <div>
+    <p>The original pixel value, $x$, is transformed to a new pixel value, $x'$: $$x' = T(x)$$
+
+    <p>Assume that $x$ and $x'$ are in range $[0,1]$.
+
+    <p>Look at the graph of $T(x)$ to understand what's happening:
+
+      <div>
+	<p>For a <em>linear</em> transformation, $T(x) = a x + b$.
+	  <div>
+	    <p>$a$ controls the contrast (a larger $a$ yields more contrast stretch)
+            <p>$b$ controls the brightness
+	    <p>[See demo of chest x-ray]
+	  </div>
+
+	<p>For a <em>power</em> transformation, $T(x) = x^\gamma, \; \gamma > 0$.
+	  <div>
+            <p>for $\gamma>1$: dark pixels get compressed; bright pixels get stretched
+            <p>for $\gamma=1$: no change
+            <p>for $\gamma<1$: dark pixels get stretched; bright pixels get compressed
+          </div>
+      </div>
+
+      <div>
+	<img src=gamma.png>
+	<p><b>[Gonzales and Woods]</b>
+      </div>
+
+      <p>[See demo of flower with changing $\gamma$]
+
+      <p>"Gamma correction" is a power transformation to make image appear correct on an output device:
+
+    <div>
+      <img src=gamma-correction.png>
+      <p><b>[Gonzales and Woods]</b>
+    </div>
+
+  </div>
+
+</body>
+</html>
