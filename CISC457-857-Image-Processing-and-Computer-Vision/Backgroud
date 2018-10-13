@@ -1,0 +1,201 @@
+
+<html>
+<head>
+  <title>CISC 457, Lecture 2 - Background</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../../class_style.css">
+  <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]} }); </script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+  </script>
+</head> 
+
+<body>
+  <div style="float: right"></div>
+    
+  <h1>Sensing and Acquisition (2.3)</h1>
+
+  <div>
+    <h2>Sensors</h2>
+
+    <div>
+      <ul class=plain>
+	<li>0D point: a photodiode
+	<li>1D line: desktop scanner, aerial scans, CT imaging.  Must scan to get 2D image.
+	<li>2D array: camera (CCD array)
+      </ul>
+
+      <div>
+	<p><img src="ccd-arrays.png" width="500px">
+	<p><b>[Gonzales & Woods figures 2.12, 2.13, 2.14]</b>
+      </div>
+
+      <p>A photodiode can have its voltage provided from the front or
+      behind.  Behind is more efficient, but somewhat more expensive
+      to build.
+
+	<div>
+	  <p><img src="ccd-front-and-back.png" width="500px">
+	    <p><b>[www.specinst.com/What_Is_A_CCD.html]</b>
+	</div>
+
+      <p>A positive voltage at the gate attracts the electrons that
+	are freed, through the photoelectric effect, when a photon
+	strikes the epitaxial layer (Si + other stuff).
+	
+      <p>The charge in one photodiode is <em>shifted</em> along a row
+	into a charge amplifier, which outputs a sequence of voltages.
+
+      <p>Colour capture uses multiple sensors per pixel.  Light is
+	filtered or prismatically refracted.
+
+	<div>
+	  <p><img src="ccd-colour-mask.png" width="300px">
+	  <p><b>[Wikipedia]</b>
+	  <p><img src="ccd-colour-prism.png" width="300px">
+	  <p><b>[Wikipedia]</b>
+	</div>
+    </div>
+      
+    <h2>Sensor Noise</h2>
+
+    <div>
+      <p>Sensor noise comes from
+
+	<ul class=plain>
+	  <li>Lack of quantum efficiency
+	  <li>Thermally generated current
+	  <li>Charge shifting
+	  <li>A/D conversion
+	</ul>
+
+	<div>
+	  <p><img src="ccd-efficiency.png" width="500px">
+	  <p>Quantum efficiency of various CCDs
+	  <p><b>[Philippe Bernhard]</b>
+	</div>
+
+      <p>Noise is often modelled as "additive Guassian noise":
+
+	<div>
+	  <p>sensed value = true value + noise
+	  <p>noise is random, but follows a zero-mean Gaussian probability with some standard deviation:
+
+	    <div>
+	      $g(x) = {1 \over \sigma \sqrt{2 \; \pi}} e^{- {1 \over 2}( {x-\mu \over \sigma} )^2}$
+	    </div>
+
+	    <div>
+	      <img src=gaussian.png width="500px">
+	      <p><b>[Wikipedia]</b>
+	    </div>
+	    
+	</div>
+
+      <p>"Blooming" is the overflow of electrons from a saturated well to an adjacent well.
+
+	<div>
+	  <p><img src="saturation.png" width="500px">
+	    <p><b>[Gonzales and Woods figure 2.19]</b>
+	</div>
+
+    </div>
+  </div>
+
+  <h1>Sampling and Quantization (2.4)</h1>
+
+  <div>
+    <p>An image is a function: $f(x,y)$
+    <p>"Sampling" is digitization in the domain $(x,y)$
+    <p>"Quantization" is digitization in the range, $f$.
+
+    <div>
+      <img src=quantization.png>
+      <p><b>[Gonzales and Woods figures 2.16, 2.17]</b>
+    </div>
+      
+
+    <P>The ranges of $f$, $x$, and $y$ are typically powers of 2:
+      <ul class=plain>
+	<li>e.g. 12 bits per pixel greyscale is 0...$2^{12}$-1, or 0...4095
+	<li>e.g. 8 bits per pixel RGB is (0...255 red, 0...255 green, 0...255 blue)
+	<li>e.g. nVidia geforce GTX 980 has image size: 5120 x 5120 x 4 bytes (RGBA) = 62.5 MB
+      </ul>
+
+    <p>Note: pixel values typically range in [0...255], but it's better to consider them as real values in [0...1]
+
+    <p>"Dynamic range" is the <em>ratio</em> between the maximum measurable radiance and the minimum detectable radiance
+      <ul class=plain>
+	<li>max occurs at sensor saturation
+	<li>min occurs when noise overwhelms the sensor
+      </ul>
+
+    <p>"Contrast" is the <em>difference</em> between the maximum and minimum radiances
+  </div>
+
+  <h1>Intensity and Radiance</h1>
+
+  <div>
+    <p>"Intensity" is a measure of the brightness of light.  It's really called radiance and defined as follows:
+
+      <div>
+	<p>"Flux" is power, measured in Watts ($W$) and approximately proportional to photons per second.
+	
+	<p>"Flux density" is power of photon crossing a particular
+	surface, measured in Watts per square meter ($W / m^2$).
+
+	<p>An angle in 2D is the length of the circumference of a unit
+	  circle subtended by the angle, and is measured in radians.
+	  Similarly, a "solid angle" in 3D is the area of the surface
+	  of a unit sphere subtended by the solid angle, and is
+	  measured in "sterradians".
+
+	<p>"Radiance" is flux density of photons crossing a particular
+	  surface, lying within a particular solid angle, measured in
+	  Watts per square meter per steradian ($W / m^2 / sr$).
+
+      </div>
+
+    <p>Radiance is a radiometric quantity that describes energy along
+      a ray.  
+
+    <p>The corresponding <b>photometric</b> quantity is the "nit",
+      measured in lumens per square meter per steradian, and describes
+      the energy <em>perceived</em> by the eye.  This perceived energy
+      depends upon the spectral response of the eye, which varies with
+      wavelength.
+	  
+    different wavelengths differently).
+  </div>
+
+  <h1>Pixel Relationships (2.5)</h1>
+
+  <div>
+    <p>In the book: 4-neighbourhood, D-neighbourhood, 8-neighbourhood
+    <p>Usual: 1-neighbourhood, 2-neighbourhood, etc.
+    <p>A "metric" measures distances between pixels
+      <ul class=plain>
+	<li>Conditions on a metric $D(p,q)$ between pixel locations $p$ and $q$
+	  <ul class=plain>
+	    <li>$D(p,q) \geq 0$
+            <li>$D(p,q) = 0 \quad \textrm{iff} \quad p=q$
+            <li>$D(p,q) = D(q,p)$
+            <li>$D(p,q) \leq D(p,r) + D(r,q)$
+	  </ul>
+	<li>Example metrics:
+	  <ul class=plain>
+	    <li>Euclidean
+	    <li>Manhattan (i.e. sum of absolute coordinates)
+	    <li>Chessboard (i.e. max of absolute coordinates)
+	  </ul>
+	<li>On metric to rule them all: the "p-norm" = $( \sum_i |x_i|^p )^{1 \over p}$
+	  <ul class=plain>
+	    <li>Euclidean is 2-norm
+	    <li>Manhattan is 1-norm
+	    <li>Chessboard is infinity-norm
+	  </ul>
+      </ul>
+
+  </div>
+
+</body>
+</html>
