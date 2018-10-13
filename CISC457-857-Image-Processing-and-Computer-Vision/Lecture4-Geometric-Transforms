@@ -1,0 +1,210 @@
+
+<html>
+<head>
+  <title>CISC 457, Lecture 4 - Geometric Transforms</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../../class_style.css">
+  <script type="text/x-mathjax-config"> MathJax.Hub.Config({ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]} }); </script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+  </script>
+  <style>
+    img { max-width: 500px; margin: 2em; }
+    img + p { margin: -2em 0em 3em 2.5em; }
+  </style>
+</head> 
+
+<body>
+<div style="float: right"></div>
+
+<h1>Geometric Transforms</h1>
+
+  <div>
+    <P>Goals:
+      <ul class=plain>
+	<li>Transform images with translation, rotation, scaling.
+	<li>Apply a sequence of transforms all at once.
+	<li>Avoid missing pixels.
+      </ul>
+  </div>
+
+
+<h1>Definitions</h1>
+
+  <div>
+    <p>$I(x,y)$ = original image
+    <p>$I'(x,y)$ = new image
+    <p>The transformation is $T: (x,y) \longrightarrow (x',y')$.
+    <p>This moves pixel $(x,y)$ in $I$ to pixel $(x',y')$ in $I'$.
+  </div>
+
+
+<h1>Forward Projection</h1>
+
+  <div>
+    <p>
+<pre>
+for (x=0; x&lt;width; x++)
+  for (y=0; y&lt;height; y++)
+    (x',y') = T(x,y)
+    I'(x',y') = I(x,y)   // must check that (x',y') is in bounds of NEW image
+</pre>
+  </div>
+
+
+<h1>Basic Transformations</h1>
+
+  <div>
+    <p>pixel $p = \left[ \begin{array}{c} x \\ y \end{array} \right]$
+
+    <p><b>Rotation by angle $\theta$: $p' = T \; p$</b>
+
+      <div>
+	<p>$T = \left[ \begin{array}{cc} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{array} \right]$
+
+	<p>$\begin{eqnarray}
+	  \left[ \begin{array}{c} x' \\ y' \end{array} \right] &
+	  = &
+	  \left[ \begin{array}{cc} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{array} \right]
+	  \left[ \begin{array}{c} x \\ y \end{array} \right] \\
+	  \\
+	  & = &
+	  \left[ \begin{array}{cc} x \cos\theta - y \sin\theta \\ x \sin\theta + y \cos\theta \end{array} \right]
+	  \end{eqnarray}$
+      </div>
+      
+    <p><b>Scaling by $(s_x,s_y)$:</b>
+      <div>
+	<p>$T = \left[ \begin{array}{cc} s_x & 0 \\ 0 & s_y \end{array} \right]$
+      </div>
+
+    <p><b>Translation by $(t_x,t_y)$:</b>
+      <div>
+	<p>$\begin{eqnarray}
+	  \left[ \begin{array}{c} x' \\ y' \end{array} \right] &
+	  = &
+	  \left[ \begin{array}{c} x \\ y \end{array} \right] + 
+	  \left[ \begin{array}{c} t_x \\ t_y \end{array} \right]
+	  \end{eqnarray}$
+
+	<p>There's no $2 \times 2$ matrix to do this!
+      </div>
+  </div>
+
+
+  <h1>Sequences of Transformations</h1>
+
+  <div>
+    <p>We want to be able to compute $p' = T_3 \; T_2 \; T_1 \; p$.
+
+    <p>e.g.
+      <ul class=plain>
+	<li>$T_1$ = translate by $(-1,-2)$
+	<li>$T_2$ = rotate by $\pi$ radians
+	<li>$T_3$ = translate by $(1,2)$
+      </ul>
+
+    <p>$\begin{eqnarray}
+      p' & = & T_3 \; (T_2 \; (T_1 \; p)) \\
+         & = & (T_3 \; T_2 \; T_1) \; p \\
+         & = & T \; p
+      \end{eqnarray}$
+
+    <p>It's more efficient to use $T$ instead of $(T_3 \; T_2 \; T_1)$,
+      especially since this is done for <em>all</em> pixels in the image.
+
+    <p>But translations cannot be written as $2 \times 2$ matrix operations
+  </div>
+
+
+  <h1>Homogeneous Coordinates</h1>
+
+  <div>
+    <p>Idea: maps points to a higher dimensional space in which translations are matrix operations.
+
+    <p>$\begin{array}{}
+      \textrm{2D} & \rightarrow & \textrm{3D} & \rightarrow & \textrm{3D} & \rightarrow & \textrm{2D} \\ \\
+      (x,y) & \rightarrow & (kx, ky, k) \\
+            &             & T(kx, ky, k) & \rightarrow & (u,v,w) \\
+            &             &              &             & (u,v,w) & \rightarrow & (u/w,v/w)
+      \end{array}$
+
+    <p>In the initial mapping 2D $\rightarrow$ 3D, typically choose $k=1$, so $(x,y) \rightarrow (x,y,1)$.
+
+    <p><b>Rotation by angle $\theta$: $p' = T \; p$</b>
+
+      <div>
+	<p>$T = \left[ \begin{array}{cc} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{array} \right]$
+
+	<p>$\begin{eqnarray}
+	  \left[ \begin{array}{c} u \\ v \\ w \end{array} \right] &
+	  = &
+	  \left[ \begin{array}{cc} \cos\theta & -\sin\theta & 0 \\ \sin\theta & \cos\theta & 0 \\ 0 & 0 & 1 \end{array} \right]
+	  \left[ \begin{array}{c} x \\ y \\ 1 \end{array} \right] \\
+	  \\
+	  & = &
+	  \left[ \begin{array}{cc} x \cos\theta - y \sin\theta \\ x \sin\theta + y \cos\theta \\ 1 \end{array} \right]
+	  \end{eqnarray}$
+
+	<p>Then divide by last component, $w$ ($= 1$ above), to get $(x',y')$.
+      </div>
+      
+    <p><b>Scaling by $(s_x,s_y)$:</b>
+      <div>
+	<p>$T = \left[ \begin{array}{cc} s_x & 0 & 0 \\ 0 & x_y & 0 \\ 0 & 0 & 1 \end{array} \right]$
+      </div>
+
+    <p><b>Translation by $(t_x,t_y)$:</b>
+      <div>
+	<p>$T = \left[ \begin{array}{cc} 1 & 0 & t_x \\ 0 & 1 & t_y \\ 0 & 0 & 1 \end{array} \right]$
+
+	<p>$\begin{eqnarray}
+	  \left[ \begin{array}{c} u \\ v \\ w \end{array} \right] &
+	  = &
+	  \left[ \begin{array}{cc} 1 & 0 & t_x \\ 0 & 1 & t_y \\ 0 & 0 & 1 \end{array} \right]
+	  \left[ \begin{array}{c} x \\ y \\ 1 \end{array} \right] \\
+	  \\
+	  & = &
+	  \left[ \begin{array}{cc} x + t_x \\ y + t_y \\ 1 \end{array} \right]
+	  \end{eqnarray}$
+
+	<p>Then divide by $w = 1$, to get $(x',y') = (x + t_x, y + t_y)$.
+      </div>
+
+    <p>So we can use homogeneous coordinates to make translation,
+      rotation, and scaling all matrix operations, which can be composed.
+
+    <p>Don't forget to divide by last component, $w$, to bring back to 2D.
+
+  </div>
+
+  <h1>Forward Projection Problems</h1>
+
+  <div>
+    <p>With transformations that dilate the pixel positions, there are
+      gaps, have no values, between pixels in the new image.
+
+    <p>[ DEMO of forward projection ]
+
+    <p>Instead, for each pixel in the new image, find where it comes from
+      in the original image.
+
+      <div>
+	<p>$\begin{array}{ll}
+	  \textrm{if }   & (x',y') = T \; (x,y) \\
+	  \textrm{then } & (x,y)   = T^{-1} (x',y')
+	  \end{array}$
+      </div>
+
+    <p><pre>
+for (x'=0; x'&lt;width; x'++)
+  for (y'=0; y'&lt;height; y'++)
+    (x,y) = T<sup>-1</sup> (x',y')
+    I'(x',y') = I(x,y)           // must check that (x,y) is in bounds of ORIGINAL image
+</pre>
+
+    <p>[ DEMO of back projection ]
+  </div>
+  
+
+</body>
+</html>
